@@ -42,7 +42,7 @@ function discoveringSubnet {
             $hostname = [System.Net.Dns]::GetHostByAddress($list1[$a]).Hostname
             $hostnameV2 = $hostname | ForEach-Object { $_.split(".")[0] } | ForEach-Object { $_.Trim() -replace "s+" } 
             
-            "$($list1[$a]) => $($hostnameV2)" >> C:\Users\{...utilisateur...}\Desktop\liste1.txt
+            "$($list1[$a]) => $($hostnameV2)" >> C:\Users\$env:username\Desktop\liste1.txt
        } 
     }
 

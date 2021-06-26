@@ -1,3 +1,48 @@
+<#
+    NAME
+        ScannerV2.ps1
+
+    SYNOPSIS
+        Scanner powershell scannant les machines et les ports ouverts
+
+    SYNTAX
+        .\scannerV2.ps1
+
+    DESCRIPTION
+        FR.
+            Ce script PowerShell permet de scanner différents sous réseaux. Par rapport
+            à sa première version, l'utilisateur peut directement choisir lors du
+            lancement du script les sous réseaux qu'il va scanner. Une fois le sous réseau
+            scanné, chaque fois qu'une machine est connectée, celle-ci sera envoyée dans un
+            fichier texte. Les informations envoyées dans ce fichier texte sont :
+            * Adresse IP utilisée sur le réseau
+            * Nom d'hôte donné par le D.N.S
+            Il est possible de scanner plusieurs sous réseaux pendant la même instance du 
+            script.
+
+            La seconde partie du script va se charger de scanner les ports des machines
+            qui ont été réperées sur le/les réseau(x). Les ports fermés ne seront pas
+            affichés. Un tableau prédéfini est déjà initalisé dans le code. Libre à
+            vous de modifier ce tableau.
+
+        EN.
+            This PowerShell script allows yo uto scan different subnets. Compared to its first
+            version, the user can directly choose when launching the script the subnets he will
+            scan. Once the subnet is scanned, each time a machine is connected, it will be send
+            in a text file. Informations sent in ths text file is :
+            * IP Address used on the network
+            * Host name given by the D.N.S
+            It is possible to scan several subnets during the same instance of the script.
+
+            The second part of the script will take care of scanning ports of machines that have
+            been found on the network. Closed ports will not be displayed. A predefined array is
+            already initialized in the source code. You are free to modify this array.
+
+    RELATED LINKS
+        Github : https://github.com/UnknowUser50/
+
+#>
+
 function INIT {
     if(Test-Path C:\Users\$env:username\AppData\Local\Temp\machineScannees.txt)
     {
@@ -5,7 +50,8 @@ function INIT {
         Remove-Item C:\Users\$env:username\AppData\Local\Temp\machineScannees.txt
     }
 
-    $WarningPreference = 'SilentlyContinue'
+    $Global:WarningPreference = 'SilentlyContinue'
+    $Global:ProgressPreference = 'SilentlyContinue'
 }
 
 ##* Nettoyage de la console : 
@@ -157,7 +203,7 @@ function discoveringSubnet {
         elseif($OneorTwo -eq "2")
         {
             ##* Appel de la fonction pour scanner que les ports les plus utilisées.
-            simplePorts
+            fastScan
         }
     }
 }
@@ -180,6 +226,9 @@ function openPorts {
             } 
         }
     }
+
+    $Global:WarningPreference = 'Continue'
+    $Global:ProgressPreference = 'Conitnue'
 }
 
 function simplePorts {
@@ -206,7 +255,7 @@ function simplePorts {
             $status = Test-NetConnection -ComputerName $listeMachine[$i] -Port $Global:portService[$y]  | findstr "TcpTestSucceeded" | ForEach-Object { $_.split(":")[1] } | ForEach-Object { $_.Trim() -replace "s+" }
             if($status -eq "True")
             {
-                Write-Host "`t[+] Le port $($Global:portService[$y]) est ouvert"
+                Write-Host "`t[+] Le port $($Global:portService[$y]) est ouvert" 
             }
         }
         ##* Second tableau de port
@@ -220,10 +269,50 @@ function simplePorts {
         }
     } 
 
+    $Global:WarningPreference = 'Continue'
+    $Global:ProgressPreference = 'Continue'
+
+}
+
+function fastScan {
+
+    [CmdletBinding()]
+    param(
+        [Parameter()]
+        [string]$hostname = $null,
+        [int]$timeout = 100,
+        $port = @(21,22,23,25,53,69,80,88,110,115,161,220,443,464,514,1080,1433,1434,1494,1701,3306,27017),
+        [int]$portNB = $port.Count
+    )
+
+    $listeMachine = Get-Content C:\Users\$env:USERNAME\AppData\Local\Temp\machineScannees.txt | ForEach-Object { $_.split("=")[0] }
+    $nomMachine = Get-Content C:\Users\$env:USERNAME\AppData\Local\Temp\machineScannees.txt | ForEach-Object { $_.split(">")[1] }
+    $nombreMachine = $listeMachine.Count
+
+    for($i = 0; $i -ne $nombreMachine; $i++)
+    {
+        Write-Host "[+] Scan des ports sur la machine suivante : $($nomMachine[$i])/$($listeMachine[$i])"
+        $requete = $state = $null
+        $hostname = $listeMachine[$i]
+
+        ##* Boucle pour les ports : 
+        for($y = 0; $y -ne $portNB; $y++)
+        {
+            $nvPort = $port[$y]
+
+            $client = New-Object System.Net.Sockets.TcpClient
+            $beginConnect = $client.BeginConnect($hostname,$nvPort,$requete,$state)
+            Start-Sleep -milli $timeout
+
+            if($client.Connected) { $open = $true } else { $open = $false }
+            $client.Close()
+            if($open -eq $true) { Write-Host "`t[+] Le port $($nvPort) est ouvert" }
+        }
+    }
+
 }
 
 INIT
 getRouting
 tempCreation
 discoveringSubnet
-$WarningPreference = 'Continue'

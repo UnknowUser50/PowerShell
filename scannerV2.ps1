@@ -4,6 +4,8 @@ function INIT {
         ##* On vide le contenu : 
         Remove-Item C:\Users\$env:username\AppData\Local\Temp\machineScannees.txt
     }
+
+    $WarningPreference = 'SilentlyContinue'
 }
 
 ##* Nettoyage de la console : 
@@ -33,8 +35,6 @@ function getRouting {
         }
         $entrer++
     }
-    ##* On saute des lignes pour un meilleur affichage :
-    Write-Host "`n`n"
 
     for($a = 0; $a -lt $Global:nbSubnetByUser; $a++)
     {
@@ -143,11 +143,88 @@ function discoveringSubnet {
             }
         }
     }
-    Write-Host "[+]==================== Fin de sortie ====================[+]"
+    Write-Host "[+]==================== Fin du script ====================[+]"
     Write-Host `n""
+    $openPort = Read-Host -Prompt "[+] Voulez-vous scanner les ports des machines récupérées ? [0/n] "
+    if($openPort -eq "O" -or $openPort -eq "o" )
+    {
+        $OneorTwo = Read-Host -Prompt "[+] Voulez faire un scan de tous les ports ou ceux les plus utilisés ? (1/2)"
+        if($OneorTwo -eq "1")
+        {
+            ##* Appel de la fonction pour scanner tous les ports
+            openPorts
+        }
+        elseif($OneorTwo -eq "2")
+        {
+            ##* Appel de la fonction pour scanner que les ports les plus utilisées.
+            simplePorts
+        }
+    }
+}
+
+function openPorts {
+
+    $listeMachine = Get-Content C:\Users\$env:username\AppData\Local\Temp\machineScannees.txt | ForEach-Object { $_.split("=")[0] }
+    $nomMachine = Get-Content C:\Users\$env:username\AppData\Local\Temp\machineScannees.txt | ForEach-Object { $_.split(">")[1] }
+    $nombreMachine = $listeMachine.Count
+
+    for($c = 0; $c -ne $nombreMachine; $c++)
+    {
+        Write-Host "[+] Scan de port sur la machine : $($nomMachine[$c])/$($listeMachine[$c])"
+        for($p = 1; $p -ne 23; $p++)
+        {
+            $status = Test-NetConnection -ComputerName $listeMachine[$c] -Port $p | findstr "TcpTestSucceeded" | ForEach-Object { $_.split(":")[1] } | ForEach-Object { $_.Trim() -replace "s+" }
+            if($status -eq "True")
+            {
+                Write-Host "`t[$($p)] Port $($p) ouvert"
+            } 
+        }
+    }
+}
+
+function simplePorts {
+
+    ##* Récuperation des machines scannées sur le réseau : 
+    $listeMachine = Get-Content C:\Users\$env:USERNAME\AppData\Local\Temp\machineScannees.txt | ForEach-Object { $_.split("=")[0] }
+    $nomMachine = Get-Content C:\Users\$env:USERNAME\AppData\Local\Temp\machineScannees.txt | ForEach-Object { $_.split(">")[1] }
+    $nombreMachine = $listeMachine.Count
+
+    ##* Ports les plus utilisés
+    $Global:portService = @(21,22,23,25,53,69,80,88,110,115,161,220,443,464,514,3306) ##* 16
+    $Global:portConnu = @(1080,1433,1434,1494,1701,27017) ##* 6
+
+    $nbport = $Global:portService.Count
+    $nbportC = $Global:portConnu.Count
+    
+    ##* On boule déja sur le nombre de machine connectée :
+    for($i = 0; $i -ne $nombreMachine; $i++)
+    {
+        Write-Host "[+] Scan des ports sur la machine suivante : $($nomMachine[$i])/$($listeMachine[$i])"
+        ##* Premier tableau de port :
+        for($y = 0; $y -ne $nbport; $y++)
+        {
+            $status = Test-NetConnection -ComputerName $listeMachine[$i] -Port $Global:portService[$y]  | findstr "TcpTestSucceeded" | ForEach-Object { $_.split(":")[1] } | ForEach-Object { $_.Trim() -replace "s+" }
+            if($status -eq "True")
+            {
+                Write-Host "`t[+] Le port $($Global:portService[$y]) est ouvert"
+            }
+        }
+        ##* Second tableau de port
+        for($z = 0; $z -ne $nbportC; $z++)
+        {
+            $statusBis = Test-NetConnection -ComputerName $listeMachine[$i] -Port $Global:portConnu[$z] | findstr "TcpTestSucceeded" | ForEach-Object { $_.split(":")[1] } | ForEach-Object { $_.Trim() -replace "s+" }
+            if($st
+                Write-Host "`t[+] Le port $($Global:portConnu[$z]) est ouvert"
+            }
+atusBis -eq "True")
+            {
+        }
+    } 
+
 }
 
 INIT
 getRouting
 tempCreation
 discoveringSubnet
+$WarningPreference = 'Continue'

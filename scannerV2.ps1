@@ -256,9 +256,12 @@ function ClassicScan {
         }
     }
 
-    Write-Host "[+]==================== Fin du scan ====================[+]`n`n" -ForegroundColor Yellow
+    Write-Host "`n[+]==================== Fin du scan ====================[+]`n`n" -ForegroundColor Yellow
     $Global:WarningPreference = 'Continue'
     $Global:ProgressPreference = 'Continue'
+
+    ## Fin du script :
+    Read-Host -Prompt "Appuyer sur une touche pour continuer..."
 
 }
 
@@ -300,9 +303,12 @@ function 1000Ports {
         }
     }
 
-    Write-Host "[+]==================== Fin du scan ====================[+]`n`n" -ForegroundColor Yellow
+    Write-Host "`n[+]==================== Fin du scan ====================[+]`n`n" -ForegroundColor Yellow
     $Global:WarningPreference = 'Continue'
     $Global:ProgressPreference = 'Continue'
+
+    ## Fin du script :
+    Read-Host -Prompt "Appuyer sur une touche pour continuer..."
 
 }
 
@@ -341,7 +347,10 @@ function fastScan {
             if($open -eq $true) { Write-Host "`t[+] Le port $($nvPort) est ouvert" -ForegroundColor Green }
         }
     }
-    Write-Host "[+]==================== Fin du scan ====================[+]`n`n" -ForegroundColor Yellow
+    Write-Host "`n[+]==================== Fin du scan ====================[+]`n`n" -ForegroundColor Yellow
+
+    ## Fin du script :
+    Read-Host -Prompt "Appuyer sur une touche pour continuer..."
 
 }
 

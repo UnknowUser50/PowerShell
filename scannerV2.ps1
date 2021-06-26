@@ -50,6 +50,8 @@ function INIT {
         Remove-Item C:\Users\$env:username\AppData\Local\Temp\machineScannees.txt
     }
 
+    ##* On place l'affichage des warnings et des progressions en mode silennce
+    ##* pour ne pas déranger l'afficher du script. 
     $Global:WarningPreference = 'SilentlyContinue'
     $Global:ProgressPreference = 'SilentlyContinue'
 }
@@ -59,12 +61,12 @@ Clear-Host
 function getRouting {
 
     ##* Fonctin globale -> portée hors de la fonction où elle est déclarée
-    $Global:nbSubnetByUser = Read-Host -Prompt "[+] Combien de sous réseau voulez-vous analyser "
+    $Global:nbSubnetByUser = Read-Host -Prompt "[?] Combien de sous réseau voulez-vous analyser "
 
     if($Global:nbSubnetByUser -eq 0)
     {
         ##* Alerte : nous ne pouvons pas avoir la valeur 0 donc sortie du script 
-        Write-Host "[!] Alerte : Cette variable doit être supérieur à 0 !"
+        Write-Host "[!] Alerte : Cette variable doit être supérieur à 0 !" -ForegroundColor Red
     }
 
     ##* Tableau pour la préparation des sous réseau
@@ -73,18 +75,20 @@ function getRouting {
 
     while($entrer -lt $Global:nbSubnetByUser)
     {
-        $Global:userSubnet += Read-Host -Prompt "[+] Entrer le sous-réseau souhaité "
+        $Global:userSubnet += Read-Host -Prompt "[?] Entrer le sous-réseau souhaité "
         ##* Si le variable saisie par l'utilisateur est nulle alors : 
         if(!$Global:userSubnet)
         {
-            Write-Host "[!] Alerte : Cette variable ne peut pas être nulle !"
+            Write-Host "[!] Alerte : Cette variable ne peut pas être nulle !" -ForegroundColor Red
         }
         $entrer++
     }
+    ##* On efface les questions posées par le script
+    Clear-Host
 
     for($a = 0; $a -lt $Global:nbSubnetByUser; $a++)
     {
-        Write-Host "[*] Le sous-réseau '$($Global:userSubnet[$a])' est déclaré"
+        Write-Host "[*] Le sous-réseau '$($Global:userSubnet[$a])' est déclaré" -ForegroundColor Yellow
     }
 
 }
@@ -99,7 +103,7 @@ function tempCreation {
         ##* Vérification du code retour de la dernière commande : 
         if($? -ne "False")
         {
-            Write-Host "[!] Alerte : Le script n'a pas pu créer le(s) fichier(s) contenant les sous-réseaux"
+            Write-Host "[!] Alerte : Le script n'a pas pu créer le(s) fichier(s) contenant les sous-réseaux" -ForegroundColor Red
         }
     }
 
@@ -156,7 +160,7 @@ function tempDestruction {
 function discoveringSubnet {
 
     Write-Host `n""
-    Write-Host "[+]==================== Sortie du script ====================[+]"
+    Write-Host "[+]==================== Sortie du script ====================[+]" -ForegroundColor Yellow
 
     for($i = 0; $i -ne $global:nbSubnetByUser; $i++)
     {
@@ -183,92 +187,120 @@ function discoveringSubnet {
                     $hostnameV2 = $hostname | ForEach-Object { $_.split(".")[0] } | ForEach-Object { $_.Trim() -replace "s+" }
 
                     ##* On place les valeurs récupérées dans un fichier texte pour une sauvegarde :
-                    Write-Host "Appareil connecté en : $($liste[$k]) =====> $($hostnameV2)"
+                    Write-Host "Appareil connecté en : $($liste[$k]) =====> $($hostnameV2)" -ForegroundColor Green
                     "$($liste[$k])==>$($hostnameV2)" >> C:\Users\$env:username\AppData\Local\Temp\machineScannees.txt
                 }
             }
         }
     }
-    Write-Host "[+]==================== Fin du script ====================[+]"
+
+    Write-Host "[+]==================== Fin du script ====================[+]" -ForegroundColor Yellow
     Write-Host `n""
-    $openPort = Read-Host -Prompt "[+] Voulez-vous scanner les ports des machines récupérées ? [0/n] "
+    Write-Host "[+]==================== Scan de ports ====================[+]" -ForegroundColor Yellow
+    $openPort = Read-Host -Prompt "[?] Voulez-vous scanner les ports des machines récupérées ? [O/n] "
+
     if($openPort -eq "O" -or $openPort -eq "o" )
     {
-        $OneorTwo = Read-Host -Prompt "[+] Voulez faire un scan de tous les ports ou ceux les plus utilisés ? (1/2)"
-        if($OneorTwo -eq "1")
+        Write-Host "`n"
+        Write-Host "[!]==================== Séléction du scan ====================[!]" -ForegroundColor Yellow
+        Write-Host "- 1 - Scan classique 65535 ports " -ForegroundColor Yellow
+        Write-Host "- 2 - Scan des 1000 premiers ports " -ForegroundColor Yellow
+        Write-Host "- 3 - Scan des ports les plus importants " -ForegroundColor Yellow
+        Write-Host "`n"
+        $choixMenu = Read-Host -Prompt "- ? - Votre choix "
+
+        switch ( $choixMenu )
         {
-            ##* Appel de la fonction pour scanner tous les ports
-            openPorts
-        }
-        elseif($OneorTwo -eq "2")
-        {
-            ##* Appel de la fonction pour scanner que les ports les plus utilisées.
-            fastScan
+            1 { ClassicScan }
+            2 { 1000Ports }
+            3 { fastScan }
+            default { Write-Host "[!] Alerte : Ce choix n'est pas possible !" -ForegroundColor Red }
         }
     }
 }
 
-function openPorts {
+function ClassicScan {
 
-    $listeMachine = Get-Content C:\Users\$env:username\AppData\Local\Temp\machineScannees.txt | ForEach-Object { $_.split("=")[0] }
-    $nomMachine = Get-Content C:\Users\$env:username\AppData\Local\Temp\machineScannees.txt | ForEach-Object { $_.split(">")[1] }
+    [CmdletBinding()]
+    Param(
+        $port = @(1..65535),
+        [int]$portNB = $port.Count,
+        [string]$hostname = $null,
+        [int]$timeout = 100
+    )
+
+    ##* Variables
+    $listeMachine = Get-Content C:\Users\$env:USERNAME\AppData\Local\Temp\machineScannees.txt | ForEach-Object { $_.split("=")[0]}
+    $nomMachine = Get-Content C:\Users\$env:USERNAME\AppData\Local\Temp\machineScannees.txt | ForEach-Object { $_.split(">")[1] }
     $nombreMachine = $listeMachine.Count
 
-    for($c = 0; $c -ne $nombreMachine; $c++)
+    for($i = 0; $i -ne $nombreMachine; $i++)
     {
-        Write-Host "[+] Scan de port sur la machine : $($nomMachine[$c])/$($listeMachine[$c])"
-        for($p = 1; $p -ne 23; $p++)
+        Write-Host "[+] Scan de port sur la machine : $($nomMachine[$i])/$($listeMachine[$i])" -ForegroundColor Yellow
+        $requete = $state = $null
+        $hostname = $listeMachine[$i]
+
+        ##* Boucle pour les ports :
+        for($j = 0; $j -ne $portNB; $j++)
         {
-            $status = Test-NetConnection -ComputerName $listeMachine[$c] -Port $p | findstr "TcpTestSucceeded" | ForEach-Object { $_.split(":")[1] } | ForEach-Object { $_.Trim() -replace "s+" }
-            if($status -eq "True")
-            {
-                Write-Host "`t[$($p)] Port $($p) ouvert"
-            } 
+            $nvPort = $port[$j]
+
+            $client = New-Object System.Net.Sockets.TcpClient
+            $initConnexion = $client.BeginConnect($hostname,$nvPort,$requete,$state)
+
+            Start-Sleep -milli $timeout
+
+            if($client.Connected) { $open = $true } else { $open = $false }
+            $client.Close()
+            if($open -eq $true) { Write-Host "`t[+] Le port $($nvPort) est ouvert" -ForegroundColor Green }
         }
     }
 
+    Write-Host "[+]==================== Fin du scan ====================[+]`n`n" -ForegroundColor Yellow
     $Global:WarningPreference = 'Continue'
-    $Global:ProgressPreference = 'Conitnue'
+    $Global:ProgressPreference = 'Continue'
+
 }
 
-function simplePorts {
+function 1000Ports {
 
-    ##* Récuperation des machines scannées sur le réseau : 
+    [CmdletBinding()]
+    Param(
+        [Parameter()]
+        [string]$hostname = $null,
+        [int]$timeout = 100,
+        $port = @(1..1000),
+        [int]$portNB = $port.Count
+    )
+
+    ##* Variables :
     $listeMachine = Get-Content C:\Users\$env:USERNAME\AppData\Local\Temp\machineScannees.txt | ForEach-Object { $_.split("=")[0] }
     $nomMachine = Get-Content C:\Users\$env:USERNAME\AppData\Local\Temp\machineScannees.txt | ForEach-Object { $_.split(">")[1] }
     $nombreMachine = $listeMachine.Count
 
-    ##* Ports les plus utilisés
-    $Global:portService = @(21,22,23,25,53,69,80,88,110,115,161,220,443,464,514,3306) ##* 16
-    $Global:portConnu = @(1080,1433,1434,1494,1701,27017) ##* 6
-
-    $nbport = $Global:portService.Count
-    $nbportC = $Global:portConnu.Count
-    
-    ##* On boule déja sur le nombre de machine connectée :
     for($i = 0; $i -ne $nombreMachine; $i++)
     {
-        Write-Host "[+] Scan des ports sur la machine suivante : $($nomMachine[$i])/$($listeMachine[$i])"
-        ##* Premier tableau de port :
-        for($y = 0; $y -ne $nbport; $y++)
-        {
-            $status = Test-NetConnection -ComputerName $listeMachine[$i] -Port $Global:portService[$y]  | findstr "TcpTestSucceeded" | ForEach-Object { $_.split(":")[1] } | ForEach-Object { $_.Trim() -replace "s+" }
-            if($status -eq "True")
-            {
-                Write-Host "`t[+] Le port $($Global:portService[$y]) est ouvert" 
-            }
-        }
-        ##* Second tableau de port
-        for($z = 0; $z -ne $nbportC; $z++)
-        {
-            $statusBis = Test-NetConnection -ComputerName $listeMachine[$i] -Port $Global:portConnu[$z] | findstr "TcpTestSucceeded" | ForEach-Object { $_.split(":")[1] } | ForEach-Object { $_.Trim() -replace "s+" }
-            if($statusBis -eq "True")
-            {
-                Write-Host "`t[+] Le port $($Global:portConnu[$z]) est ouvert"
-            }
-        }
-    } 
+        Write-Host "[+] Scan de port sur la machine : $($nomMachine[$i])/$($listeMachine[$i])" -ForegroundColor Yellow
+        $requete = $state = $null
+        $hostname = $listeMachine[$i]
 
+        ##* Boucle pour les ports : 
+        for($j = 0; $j -ne $portNB; $j++)
+        {
+            $nvPort = $port[$j]
+
+            $client = New-Object System.Net.Sockets.TcpClient
+            $initConnexion = $client.BeginConnect($hostname,$nvPort,$requete,$state)
+
+            Start-Sleep -milli $timeout
+
+            if($client.Connected) { $open = $true } else { $open = $false }
+            $client.Close()
+            if( $open -eq $true) { Write-Host "`t[+] Le port $($nvPort) est ouvert" -ForegroundColor Green }
+        }
+    }
+
+    Write-Host "[+]==================== Fin du scan ====================[+]`n`n" -ForegroundColor Yellow
     $Global:WarningPreference = 'Continue'
     $Global:ProgressPreference = 'Continue'
 
@@ -291,7 +323,7 @@ function fastScan {
 
     for($i = 0; $i -ne $nombreMachine; $i++)
     {
-        Write-Host "[+] Scan des ports sur la machine suivante : $($nomMachine[$i])/$($listeMachine[$i])"
+        Write-Host "[+] Scan des ports sur la machine suivante : $($nomMachine[$i])/$($listeMachine[$i])" -ForegroundColor Yellow
         $requete = $state = $null
         $hostname = $listeMachine[$i]
 
@@ -301,14 +333,15 @@ function fastScan {
             $nvPort = $port[$y]
 
             $client = New-Object System.Net.Sockets.TcpClient
-            $beginConnect = $client.BeginConnect($hostname,$nvPort,$requete,$state)
+            $initConnexion = $client.BeginConnect($hostname,$nvPort,$requete,$state)
             Start-Sleep -milli $timeout
 
             if($client.Connected) { $open = $true } else { $open = $false }
             $client.Close()
-            if($open -eq $true) { Write-Host "`t[+] Le port $($nvPort) est ouvert" }
+            if($open -eq $true) { Write-Host "`t[+] Le port $($nvPort) est ouvert" -ForegroundColor Green }
         }
     }
+    Write-Host "[+]==================== Fin du scan ====================[+]`n`n" -ForegroundColor Yellow
 
 }
 

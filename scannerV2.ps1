@@ -213,11 +213,10 @@ function simplePorts {
         for($z = 0; $z -ne $nbportC; $z++)
         {
             $statusBis = Test-NetConnection -ComputerName $listeMachine[$i] -Port $Global:portConnu[$z] | findstr "TcpTestSucceeded" | ForEach-Object { $_.split(":")[1] } | ForEach-Object { $_.Trim() -replace "s+" }
-            if($st
+            if($statusBis -eq "True")
+            {
                 Write-Host "`t[+] Le port $($Global:portConnu[$z]) est ouvert"
             }
-atusBis -eq "True")
-            {
         }
     } 
 

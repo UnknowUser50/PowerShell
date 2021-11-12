@@ -1,5 +1,5 @@
-# Importation du module :
-Get-Module Get-Subnet
+# Installation du module :
+Install-Module Get-Subnet
 # Désactivation des erreurs et des barres de progression :
 $ProgressPreference = 'silentlyContinue'
 $ErrorActionPreference = 'silentlyContinue'

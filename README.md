@@ -23,3 +23,21 @@ Une fois les sous réseaux scannés, les adresses de {1..256} seront placées da
 Le script va ensuite pouvoir faire comme sa version 1.0 et repérer les machines sur les différents sous réseaux.
 
 ==> La version en cour de développement va prévoir de scanner les ports les plus importants sur les machines afin de voir les ports ouverts.
+
+# Script de révision réseau
+
+## Script permettant de générer des adresses IP aléatoire vous permettant de réviser.
+
+Ce script permet de vous entrainer aux calculs d'adresses I.P. Vous aurez 4 modules disponibles sur ce script.
+* Le premier vous questionnera sur 10 adresses IP
+* Le deuxième vous questionnera sur 20 adresses IP
+* Le troisième vous questionnera sur 30 adresses IP
+* Le quatrième vous questionnera sur le nombre d'IP de votre choix.
+
+Pour chaque adresse IP vous devrez donner les informations suivantes :
+* La classe de l'adresse IP (A,B,C,D...),
+* L'adresse de sous réseau,
+* L'adresse de diffusion,
+* La première adresse I.P (adresse de sous réseau comprise),
+* La dernière adresse I.P (adresse de broadcast comprise),
+* Le nombre de machines possibles sur le réseau.

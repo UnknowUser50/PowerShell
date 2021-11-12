@@ -296,3 +296,4 @@ switch ($get_module)
     4 { training }
     0 { exit }
     default { Write-Host "          > Pas de module !" }
+}

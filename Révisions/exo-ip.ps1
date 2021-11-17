@@ -86,8 +86,7 @@ function touriste
             $score++
         }
     }
-    Write-Host "> Votre score : $($score)" -ForegroundColor DarkYellow
-
+    Read-Host "> Vous venez de terminer ce module. Appuyez sur n'importe quelle touche pour continuer "
 }
 
 function challenger
@@ -152,7 +151,7 @@ function challenger
             $score++
         }
     }
-    Write-Host "> Votre score : $($score)" -ForegroundColor DarkYellow
+    Read-Host "> Vous venez de terminer ce module. Appuyez sur n'importe quelle touche pour continuer "
 }
 
 function tryharder
@@ -217,7 +216,7 @@ function tryharder
             $score++
         }
     }
-    Write-Host "> Votre score : $($score)" -ForegroundColor DarkYellow
+    Read-Host "> Vous venez de terminer ce module. Appuyez sur n'importe quelle touche pour continuer "
 }
 
 function training
@@ -285,7 +284,7 @@ function training
             $score++
         }
     }
-    Write-Host "> Votre score : $($score)" -ForegroundColor DarkYellow
+    Read-Host "> Vous venez de terminer ce module. Appuyez sur n'importe quelle touche pour continuer "
 }
 
 switch ($get_module)

@@ -1,0 +1,43 @@
+Combien d'octet(s) possede une adresse IPv4 ?
+A quoi sert une adresse IPv4 ?
+Comment connaitre le nombre d'adresse allouable sur un reseau ?
+A quoi sert une adresse MAC ?
+A quoi sert une table de routage ?
+Quelles sont les 3 colonnes d'une table de routage ?
+A quoi sert un NAT ?
+Qu'est ce qu'une socket ?
+Comment localiser un programme sur Internet ?
+A quoi sert un port ?
+Quels sont les 4 grands protocoles reseau ?
+Qu'est ce que le protocole ICMP ?
+Quelle est la différence entre UDP et TCP ?
+Comment se passe la transmission sous TCP ?
+A quoi sert la redirection de port ?
+Quelle est la methode la plus securisee pour deployer un VLAN ?
+Qu'est ce qui se trouve le plus souvent en face d'un port trunk ?
+Quels sont les 4 grands protocoles de routage dynamique ?
+A quoi sert le Spanning-Tree ?
+Comment afficher la table de routage sur Linux ?
+Comment afficher la table de routage sur Windows
+Quelle adresse symbolise la route par defaut ? (IP/Masque)
+Sur combien d'octet est une adresse MAC ?
+Combien d'octet possede une IPv6 ?
+192.168.0.0/16 est une IP privee ou publique ?
+Quelles sont les 3 adresses privees ?
+Quelles sont les deux parties qui caracterisent une adresse IP ?
+Comment deduire une classe sur une adresse IP ?
+Comment est caracterise une trame encapsulee ?
+Qu'est ce qu'un switch de niveau 3 ?
+Qu'est ce qu'une adresse IP privee ?
+Comment est structuree une adresse de sous reseau ?
+Comment est structuree une adresse de diffusion ?
+Quelle est la comannde permettant d'afficher les configurations reseau sur Linux ?
+Quel est le prerequis pour que le NAT fonctionne ?
+Quand faut-il utiliser un NAT ?
+La box apprecie-t-elle le NAT/PAT ?
+Est-ce que un VLAN sert a securisee un reseau ?
+Quand sait-on qu'un VLAN est efficace ?
+Comment est structuree une requete TCP/ IP ?
+Comment est structuree une trame DOT1Q ?
+A quelle entite appartient EIGRP ?
+Qu'est ce qu'une AREA/AS ?

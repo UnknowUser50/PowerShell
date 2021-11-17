@@ -41,3 +41,8 @@ Pour chaque adresse IP vous devrez donner les informations suivantes :
 * La première adresse I.P (adresse de sous réseau comprise),
 * La dernière adresse I.P (adresse de broadcast comprise),
 * Le nombre de machines possibles sur le réseau.
+
+# Script questionnaire réseau informatique
+
+Ce script permet de reviser certaines notions sur le réseau informatique pour la préparation d'une évaluation de fin de module.
+Un total de 43 questions est pour le moment présent.

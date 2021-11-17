@@ -4,11 +4,22 @@
 <br/>
 
 # Sommaire
+## 0 - Prérequis
 ## 1 - Introduction et problématique 
 ## 2 - Localisation du module après téléchargement
 ## 3 - Modification du fichier PowerShell
 ## 4 - Test de validation 
 <br />
+<br />
+
+## 0 - Prérequis
+
+Pour faire des modifications sur un module, il est nécessaire de posséder ce module. La commande pour installer le module est la suivante : 
+```
+PS C:\Users\Utilisateur> Install-Module Subnet
+```
+Il faudra ensuite accéder les conditions de téléchargement.
+
 <br />
 
 ## 1 - Introduction et problématique 
@@ -43,7 +54,7 @@ Dernière adresse allouable : adresse-de-diffusion - 1
 ```
 La suite du document explique comment procéder pour obtenir ces informations. La sortie ressemblera, après modifications à : 
 ```
-PS C:\Users\Utilisateurs> Get-Subnet 192.168.10.10 -MaskBits 20
+PS C:\Users\Utilisateur> Get-Subnet 192.168.10.10 -MaskBits 20
 
 IPAddress        : 192.168.10.10
 MaskBits         : 20
@@ -64,7 +75,7 @@ Afin d'effectuer quelconque modification, nous devons tout d'abord localiser le 
 Premièrement, nous allons vérifier s'il n'est pas présent au chemin d'installation de base.
 Ouvrez un ***shell powershell*** et tapez la commande suivante : 
 ```
-Test-Path C:\Users\Nom_utilisateur\Documents\PowerShell\Modules\Subnet
+PS C:\Users\Utilisateur> Test-Path C:\Users\Nom_utilisateur\Documents\PowerShell\Modules\Subnet
 ```
 Si le résultat est ***True*** vous pouvez directement passer à l'étape 3.
 Cependant, si le résultat est ***False***, il va falloir vous rendre à la racine de votre PC ***(C:\)***. Si vous ouvrez un explorateur de fichier, il vous suffira de cliquer sur 
@@ -118,7 +129,7 @@ Nous pouvons maintenant sauvegarder nos modifications et quitter notre bloc-note
 
 Nous allons maintenant tester les modifications apportées. Ouvrez un terminal PowerShell et lancez une commande Subnet de test :
 ```
-Get-Subnet 192.168.10.10 -MaskBits 20
+PS C:\Users\Utilisateur> Get-Subnet 192.168.10.10 -MaskBits 20
 ```
 La sortie devrait donc contenir un ***'Range'*** identique à celui ci-dessous :
 ```

@@ -14,7 +14,7 @@
 ## 1 - Introduction et problématique 
 
 Le module PowerShell est un module permettant de récupérer des informations de base sur un réseau donné.
-Ces informations peuvent être intéréssantes et nous pouvons donc réaliser divers exercices pour tester nos connaissances sur le calcul d'adresse.
+Ces informations peuvent être intéressantes et nous pouvons donc réaliser divers exercices pour tester nos connaissances sur le calcul d'adresse.
 
 Les informations obtenues grâce à ce module sont les suivantes :
 > Adresse IP
@@ -35,8 +35,8 @@ Les informations obtenues grâce à ce module sont les suivantes :
 
 Le problème majeur est que nous souhaitons obtenir la première adresse allouable sur le réseau et la dernière adresse allouable du réseau est que nous obtenons soit
 ***'l'adresse de sous-réseau - l'adresse de diffusion'*** ou bien sur le module ***'uniquement la première adresse allouable'***.
-Cependant, l'adresse de sous-réseau ainsi que l'adresse de diffusion ne sont pas allouable à des machines qui souhaitent se connecter.
-Voici comment, sur papier, obtenir ces deux adresses
+Cependant, l'adresse de sous-réseau ainsi que l'adresse de diffusion ne sont pas allouables à des machines qui souhaitent se connecter.
+Voici comment, sur papier, obtenir ces deux adresses : 
 ```
 Première adresse allouable : adresse-sous-reseau + 1
 Dernière adresse allouable : adresse-de-diffusion - 1
@@ -68,17 +68,17 @@ Test-Path C:\Users\Nom_utilisateur\Documents\PowerShell\Modules\Subnet
 ```
 Si le résultat est ***True*** vous pouvez directement passer à l'étape 3.
 Cependant, si le résultat est ***False***, il va falloir vous rendre à la racine de votre PC ***(C:\)***. Si vous ouvrez un explorateur de fichier, il vous suffira de cliquer sur 
-***"Ce Pc"***. En haut à droite de l'explorateur, vous trouverez une barre de recherche. Saissisez le terme suivant : 
+***"Ce Pc"***. En haut à droite de l'explorateur, vous trouverez une barre de recherche. Saisissez le terme suivant : 
 ```
 Subnet
 ```
-Le dossier que nous souhaitons obtenir porte ce nom identique, double-cliquez dessus.
+Le dossier que nous souhaitons obtenir porte ce nom à l'identique, double-cliquez dessus.
 
 <br />
 
 ## 3 - Modification du fichier PowerShell
 
-Une fois que vous vous êtes placez dans le dossier précédent cité, parcourez les dossiers jusqu'à voir un dossier nommé ***"Public"***. Rendez-vous dans ce 
+Une fois que vous vous êtes placé dans le dossier précédent cité, parcourez les dossiers jusqu'à voir un dossier nommé ***"Public"***. Rendez-vous dans ce 
 dossier, vous devriez trouver un fichier nommé ***'Get-Subnet.ps1'***
 
 Ouvrez ce fichier (avec le bloc-notes) et rendez-vous à la ligne ***'114'*** juste en dessous de l'instruction ***'Write-Warning'*** : 
@@ -110,7 +110,7 @@ Cela correspond à la sortie affichée sur votre shell lorsque nous appelons ***
             HostAddressCount = $HostAddressCount
         }
 ```
-Nous pouvons maintenant sauvegarder nos modifications et quittez notre bloc-notes.
+Nous pouvons maintenant sauvegarder nos modifications et quitter notre bloc-notes.
 
 <br />
 
@@ -125,4 +125,4 @@ La sortie devrait donc contenir un ***'Range'*** identique à celui ci-dessous :
 Range            : 192.168.0.1 ~ 192.168.15.254
 ```
 
-Le problème de première IP allouable et dernière IP allouable est maintenant reglé !
+Le problème de première IP allouable et dernière IP allouable est maintenant réglé !

@@ -7,7 +7,6 @@
 ##*                d'environnement suivante : '$env:username' qui permet de donner le nom d'utilisateur
 ##*                qui exécute le script. 
 ##*
-##* Créateur :     Hugo Duparque - Etudiant en informatique / CFA UTEC Marne-la-Vallée
 ##*
 ##* Date :         15 juin 2021
 ##*
